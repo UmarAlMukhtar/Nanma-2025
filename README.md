@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NANMA Family Fest 2025 - Registration Website
+
+A complete Next.js application for family event registration with admin dashboard, built for NANMA Puthiyakavu Mahallu Association, Dubai Committee.
+
+## Features
+
+### 🎯 Registration System
+- **Complete Form**: Exact replica of Google Form structure with 11 fields
+- **Validation**: Real-time form validation with Zod schema
+- **Phone Formatting**: Auto-format UAE phone numbers (+971)
+- **Duplicate Prevention**: Prevent duplicate registrations by mobile number
+- **Responsive Design**: Mobile-first design with Tailwind CSS
+
+### 📊 Admin Dashboard
+- **Statistics Cards**: Total registrations, adults, children, and attendees
+- **Data Management**: Sortable and searchable registration table
+- **CSV Export**: Download registrations with custom filename
+- **Payment Status**: Update payment status for each registration
+- **Real-time Updates**: Live data refresh functionality
+
+### 🔐 Security
+- **Admin Authentication**: Simple email/password authentication
+- **Route Protection**: Middleware-protected admin routes
+- **Session Management**: HTTP-only cookies for secure sessions
+- **Input Validation**: Server-side validation for all inputs
+
+## Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **TypeScript**: Full type safety throughout
+- **Database**: MongoDB with Mongoose ODM
+- **Styling**: Tailwind CSS v4
+- **Forms**: React Hook Form with Zod validation
+- **Icons**: Lucide React
+- **Export**: React CSV for data export
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js 18+ 
+- MongoDB database (local or Atlas)
+- npm or yarn package manager
 
+### Installation
+
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+2. **Environment Setup**
+   Update `.env.local` with your values:
+   ```env
+   MONGODB_URI="your-mongodb-connection-string"
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your-secret-key
+   JWT_SECRET="your_jwt_secret"
+   ADMIN_EMAIL="admin@nanma.com"
+   ADMIN_PASSWORD="your_admin_password"
+   ```
+
+3. **Start Development Server**
+   ```bash
+   npm run dev
+   ```
+
+   Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+## Deployment
+
+### Vercel (Recommended)
+1. Connect repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Deploy automatically
+
+### Manual Deployment
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Admin Access
+- URL: `/admin`
+- Use credentials from environment variables
+- Full dashboard with export capabilities
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**NANMA Puthiyakavu Mahallu Association, Dubai Committee**  
+*Building stronger communities, one family at a time.*
