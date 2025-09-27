@@ -10,11 +10,11 @@
     "NEXTAUTH_SECRET": "@nextauth_secret",
     "JWT_SECRET": "@jwt_secret",
     "ADMIN_EMAIL": "@admin_email",
-    "ADMIN_PASSWORD": "@admin_password"
+    "ADMIN_PASSWORD_HASH": "@admin_password_hash"
   },
   "functions": {
     "src/app/api/**/*.ts": {
-      "maxDuration": 10
+      "maxDuration": 30
     }
   },
   "regions": ["bom1"]
