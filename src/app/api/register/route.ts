@@ -71,6 +71,15 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Registration error:', error);
     
+    // Handle timeout errors
+    if (error instanceof Error && (error.message.includes('timeout') || error.message.includes('ECONNRESET'))) {
+      return NextResponse.json<ApiResponse<null>>({
+        success: false,
+        error: 'Database timeout',
+        message: 'Database connection timed out. Please try again.'
+      }, { status: 504 });
+    }
+    
     // Handle mongoose validation errors
     if (error instanceof Error && error.name === 'ValidationError') {
       return NextResponse.json<ApiResponse<null>>({

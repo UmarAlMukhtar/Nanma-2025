@@ -6,8 +6,10 @@
   "installCommand": "npm install",
   "functions": {
     "src/app/api/**/*.ts": {
-      "maxDuration": 30
+      "maxDuration": 60,
+      "memory": 1024
     }
   },
-  "regions": ["bom1"]
+  "regions": ["bom1"],
+  "crons": []
 }

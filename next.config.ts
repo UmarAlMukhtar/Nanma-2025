@@ -15,6 +15,16 @@ const nextConfig: NextConfig = {
   // Enable experimental features
   experimental: {
     optimizePackageImports: ['lucide-react'],
+    serverComponentsExternalPackages: ['mongoose'],
+  },
+
+  // Webpack optimizations
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Don't bundle these packages on the server
+      config.externals.push('mongoose');
+    }
+    return config;
   },
 
   // Environment variables

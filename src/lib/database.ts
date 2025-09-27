@@ -29,6 +29,13 @@ async function connectToDatabase(): Promise<typeof mongoose> {
   if (!cached!.promise) {
     const opts = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 30000, // 30 seconds
+      socketTimeoutMS: 45000, // 45 seconds
+      connectTimeoutMS: 30000, // 30 seconds
+      maxPoolSize: 5, // Limit connection pool for serverless
+      minPoolSize: 1,
+      maxIdleTimeMS: 30000,
+      heartbeatFrequencyMS: 10000,
     };
 
     cached!.promise = mongoose.connect(MONGODB_URI, opts);
@@ -36,8 +43,10 @@ async function connectToDatabase(): Promise<typeof mongoose> {
 
   try {
     cached!.conn = await cached!.promise;
+    console.log('✅ Database connected successfully');
   } catch (e) {
     cached!.promise = null;
+    console.error('❌ Database connection failed:', e);
     throw e;
   }
 

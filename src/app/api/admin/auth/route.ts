@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import { ApiResponse } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
@@ -16,9 +17,9 @@ export async function POST(request: NextRequest) {
 
     // Get admin credentials from environment
     const adminEmail = process.env.ADMIN_EMAIL;
-    const adminPassword = process.env.ADMIN_PASSWORD;
+    const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
 
-    if (!adminEmail || !adminPassword) {
+    if (!adminEmail || !adminPasswordHash) {
       return NextResponse.json<ApiResponse<null>>({
         success: false,
         error: 'Configuration error',
@@ -26,8 +27,18 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
-    // Verify credentials
-    if (email !== adminEmail || password !== adminPassword) {
+    // Verify email
+    if (email !== adminEmail) {
+      return NextResponse.json<ApiResponse<null>>({
+        success: false,
+        error: 'Invalid credentials',
+        message: 'Invalid email or password.'
+      }, { status: 401 });
+    }
+
+    // Verify password using bcrypt
+    const isPasswordValid = await bcrypt.compare(password, adminPasswordHash);
+    if (!isPasswordValid) {
       return NextResponse.json<ApiResponse<null>>({
         success: false,
         error: 'Invalid credentials',
