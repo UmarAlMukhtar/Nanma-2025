@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { Registration, AGE_GROUPS, COUNTRY_CODES } from '../types';
+import { Registration, AGE_GROUPS } from '../types';
 
 export interface IRegistration extends Registration, Document {
   _id: string;

@@ -31,7 +31,7 @@ export const registrationSchema = z.object({
   
   mobileCountryCode: z.string()
     .min(1, 'Country code is required')
-    .refine((val) => validCountryCodes.includes(val as any), {
+    .refine((val) => validCountryCodes.includes(val as typeof validCountryCodes[number]), {
       message: 'Please select a valid country code'
     }),
   
@@ -50,7 +50,7 @@ export const registrationSchema = z.object({
   
   whatsappCountryCode: z.string()
     .optional()
-    .refine((val) => !val || validCountryCodes.includes(val as any), {
+    .refine((val) => !val || validCountryCodes.includes(val as typeof validCountryCodes[number]), {
       message: 'Please select a valid country code'
     }),
   
