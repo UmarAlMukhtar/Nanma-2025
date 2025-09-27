@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registrationSchema, RegistrationFormSchema, formatPhoneNumber, parsePhoneNumber, validatePhoneNumber } from '@/lib/validation';
-import { AGE_GROUPS, COUNTRY_CODES } from '@/lib/types';
+import { AGE_GROUPS, COUNTRY_CODES, PLACE_OF_RESIDENCE_OPTIONS } from '@/lib/types';
 import { cn } from '@/utils/cn';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
@@ -229,11 +229,11 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
           <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700 mb-2">
             Mobile Number *
           </label>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <select
               {...register('mobileCountryCode')}
               className={cn(
-                "px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
+                "w-full sm:w-auto min-w-0 sm:min-w-[120px] px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
                 errors.mobileCountryCode ? "border-red-300" : "border-gray-300"
               )}
             >
@@ -250,7 +250,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
               onChange={handlePhoneInput('mobileNumber', 'mobileCountryCode')}
               onBlur={handlePhoneBlur('mobileNumber', 'mobileCountryCode')}
               className={cn(
-                "flex-1 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
+                "flex-1 min-w-0 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
                 errors.mobileNumber ? "border-red-300" : "border-gray-300"
               )}
               placeholder="Enter mobile number or paste full international number"
@@ -268,11 +268,11 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
           <label htmlFor="whatsappNumber" className="block text-sm font-medium text-gray-700 mb-2">
             WhatsApp Number (Optional)
           </label>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <select
               {...register('whatsappCountryCode')}
               className={cn(
-                "px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
+                "w-full sm:w-auto min-w-0 sm:min-w-[120px] px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
                 errors.whatsappCountryCode ? "border-red-300" : "border-gray-300"
               )}
             >
@@ -290,7 +290,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
               onChange={handlePhoneInput('whatsappNumber', 'whatsappCountryCode')}
               onBlur={handlePhoneBlur('whatsappNumber', 'whatsappCountryCode')}
               className={cn(
-                "flex-1 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
+                "flex-1 min-w-0 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
                 errors.whatsappNumber ? "border-red-300" : "border-gray-300"
               )}
               placeholder="Enter WhatsApp number or paste full international number"
@@ -350,16 +350,21 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
           <label htmlFor="placeOfResidenceInPuthiyakavu" className="block text-sm font-medium text-gray-700 mb-2">
             Place of Residence in Puthiyakavu Mahallu Limit *
           </label>
-          <input
-            type="text"
+          <select
             id="placeOfResidenceInPuthiyakavu"
             {...register('placeOfResidenceInPuthiyakavu')}
             className={cn(
               "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
               errors.placeOfResidenceInPuthiyakavu ? "border-red-300" : "border-gray-300"
             )}
-            placeholder="Enter your place of residence"
-          />
+          >
+            <option value="">Select your place of residence</option>
+            {PLACE_OF_RESIDENCE_OPTIONS.map((place) => (
+              <option key={place} value={place}>
+                {place}
+              </option>
+            ))}
+          </select>
           {errors.placeOfResidenceInPuthiyakavu && (
             <p className="mt-1 text-sm text-red-600">{errors.placeOfResidenceInPuthiyakavu.message}</p>
           )}

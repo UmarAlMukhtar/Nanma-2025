@@ -62,6 +62,24 @@ export const AGE_GROUPS = [
 
 export type AgeGroup = typeof AGE_GROUPS[number];
 
+export const PLACE_OF_RESIDENCE_OPTIONS = [
+  'Puthiyakavu',
+  'Punnakka Bazar', 
+  'Pulinchodu',
+  'Kottamkulam',
+  'Chakkarappadam',
+  'Thrippekkulam',
+  'C.K.Valavu',
+  'Pazhunthara',
+  'Arattupadi',
+  'Pozhamkavu',
+  'Kalariparamba',
+  'Kodoor',
+  'Other'
+] as const;
+
+export type PlaceOfResidence = typeof PLACE_OF_RESIDENCE_OPTIONS[number];
+
 export const COUNTRY_CODES = [
   // Middle East (most common for this event)
   { code: '+971', country: 'UAE', flag: '🇦🇪' },

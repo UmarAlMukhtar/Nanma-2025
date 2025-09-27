@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AGE_GROUPS, COUNTRY_CODES } from './types';
+import { AGE_GROUPS, COUNTRY_CODES, PLACE_OF_RESIDENCE_OPTIONS } from './types';
 
 const validCountryCodes = COUNTRY_CODES.map(c => c.code);
 
@@ -73,10 +73,9 @@ export const registrationSchema = z.object({
     .max(100, 'Location cannot exceed 100 characters')
     .optional(),
   
-  placeOfResidenceInPuthiyakavu: z.string()
-    .min(1, 'Place of residence in Puthiyakavu Mahallu limit is required')
-    .max(100, 'Place of residence cannot exceed 100 characters')
-    .trim(),
+  placeOfResidenceInPuthiyakavu: z.enum(PLACE_OF_RESIDENCE_OPTIONS, {
+    errorMap: () => ({ message: 'Please select a valid place of residence' })
+  }),
   
   adultsCount: z.number()
     .min(1, 'Adults count must be at least 1')
