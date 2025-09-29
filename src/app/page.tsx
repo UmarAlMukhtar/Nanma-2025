@@ -8,16 +8,19 @@ export default function Home() {
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="text-center">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-green-800 mb-2">
-              NANMA Family Fest 2025
-            </h1>
-            <p className="text-lg md:text-xl text-gray-600 mb-1">
-              NANMA Puthiyakavu Mahallu Association, Dubai Committee
-            </p>
-            <p className="text-base text-gray-500">
-              നന്മ പുതിയകാവ് മഹല്ല്  അസ്സോസിയേഷൻ, ദുബായ് കമ്മിറ്റി
-            </p>
+          <div className="flex items-center gap-6">
+            <img src="/logo.png" alt="NANMA Logo" className="h-16 w-auto flex-shrink-0" />
+            <div className="text-center flex-1">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-green-800 mb-2">
+                NANMA Family Fest 2025
+              </h1>
+              <p className="text-lg md:text-xl text-gray-600 mb-1">
+                NANMA Puthiyakavu Mahallu Association, Dubai Committee
+              </p>
+              <p className="text-base text-gray-500">
+                നന്മ പുതിയകാവ് മഹല്ല്  അസ്സോസിയേഷൻ, ദുബായ് കമ്മിറ്റി
+              </p>
+            </div>
           </div>
         </div>
       </header>
