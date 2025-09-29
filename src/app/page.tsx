@@ -8,7 +8,7 @@ export default function Home() {
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col md:flex-row items-center gap-6">
             <img src="/logo.png" alt="NANMA Logo" className="h-16 w-auto flex-shrink-0" />
             <div className="text-center flex-1">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-green-800 mb-2">
