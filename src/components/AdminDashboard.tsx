@@ -44,6 +44,12 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     direction: 'asc' | 'desc';
   }>({ key: 'createdAt', direction: 'desc' });
   const [checkInFilter, setCheckInFilter] = useState<'all' | 'checked-in' | 'not-checked-in'>('all');
+  const [checkInModal, setCheckInModal] = useState<{
+    isOpen: boolean;
+    registration: Registration | null;
+    adultsCount: number;
+    childrenCount: number;
+  }>({ isOpen: false, registration: null, adultsCount: 0, childrenCount: 0 });
 
 
   // Fetch data
@@ -136,10 +142,34 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     }));
   };
 
-  // Toggle check-in status
-  const toggleCheckIn = async (id: string, currentStatus: boolean) => {
+  // Open check-in modal
+  const openCheckInModal = (registration: Registration) => {
+    setCheckInModal({
+      isOpen: true,
+      registration,
+      adultsCount: registration.isCheckedIn ? 0 : registration.adultsCount,
+      childrenCount: registration.isCheckedIn ? 0 : registration.childrenCount
+    });
+  };
+
+  // Close check-in modal
+  const closeCheckInModal = () => {
+    setCheckInModal({ isOpen: false, registration: null, adultsCount: 0, childrenCount: 0 });
+  };
+
+  // Handle check-in with people count
+  const handleCheckIn = async () => {
+    if (!checkInModal.registration) return;
+    
+    const { registration } = checkInModal;
+    const totalSelected = checkInModal.adultsCount + checkInModal.childrenCount;
+    
+    if (totalSelected === 0 && !registration.isCheckedIn) {
+      alert('Please select at least one person to check in.');
+      return;
+    }
+    
     try {
-      //console.log('Toggling check-in for:', id, 'from', currentStatus, 'to', !currentStatus);
       setLoading(true);
       
       const response = await fetch('/api/admin/registrations', {
@@ -147,18 +177,26 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id, isCheckedIn: !currentStatus }),
+        body: JSON.stringify({ 
+          id: registration._id, 
+          isCheckedIn: !registration.isCheckedIn,
+          checkedInAdults: registration.isCheckedIn ? 0 : checkInModal.adultsCount,
+          checkedInChildren: registration.isCheckedIn ? 0 : checkInModal.childrenCount
+        }),
       });
 
-      //console.log('Response status:', response.status);
       const result = await response.json();
-      //console.log('Response result:', result);
 
       if (result.success) {
         // Update registrations state immediately for better UX
         setRegistrations(prev =>
           prev.map(reg =>
-            reg._id === id ? { ...reg, isCheckedIn: !currentStatus } : reg
+            reg._id === registration._id ? { 
+              ...reg, 
+              isCheckedIn: !registration.isCheckedIn,
+              checkedInAdults: registration.isCheckedIn ? 0 : checkInModal.adultsCount,
+              checkedInChildren: registration.isCheckedIn ? 0 : checkInModal.childrenCount
+            } : reg
           )
         );
         
@@ -169,9 +207,70 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
           setStats(statsResult.data);
         }
         
-        //console.log('Check-in status updated successfully');
+        closeCheckInModal();
       } else {
         console.error('Check-in update failed:', result.message);
+        alert(result.message || 'Failed to update check-in status');
+      }
+    } catch (error) {
+      console.error('Error updating check-in status:', error);
+      alert('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Toggle check-in status (legacy function - kept for simple toggle)
+  const toggleCheckIn = async (id: string, currentStatus: boolean) => {
+    const registration = registrations.find(r => r._id === id);
+    if (!registration) return;
+    
+    if (!currentStatus) {
+      // If checking in, open modal for people selection
+      openCheckInModal(registration);
+      return;
+    }
+    
+    // If checking out, do it directly
+    try {
+      setLoading(true);
+      
+      const response = await fetch('/api/admin/registrations', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          id, 
+          isCheckedIn: false,
+          checkedInAdults: 0,
+          checkedInChildren: 0
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Update registrations state immediately for better UX
+        setRegistrations(prev =>
+          prev.map(reg =>
+            reg._id === id ? { 
+              ...reg, 
+              isCheckedIn: false,
+              checkedInAdults: 0,
+              checkedInChildren: 0
+            } : reg
+          )
+        );
+        
+        // Update stats separately to avoid full refresh
+        const statsResponse = await fetch('/api/admin/registrations?action=stats');
+        const statsResult = await statsResponse.json();
+        if (statsResult.success) {
+          setStats(statsResult.data);
+        }
+      } else {
+        console.error('Check-out update failed:', result.message);
         alert(result.message || 'Failed to update check-in status');
       }
     } catch (error) {
@@ -218,7 +317,8 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       'Name': reg.name,
       'Age Group': reg.ageGroup,
       "Father's/Husband's Name": reg.fatherHusbandName,
-      'House Name': reg.houseName,
+      'House/Family Name': reg.houseName,
+      'Email': reg.email,
       'Mobile Number': `${reg.mobileCountryCode}${reg.mobileNumber}`,
       'WhatsApp Number': reg.whatsappNumber ? `${reg.whatsappCountryCode}${reg.whatsappNumber}` : '',
       'Residing Emirates': reg.residingEmirates,
@@ -228,6 +328,9 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       'Children Count': reg.childrenCount,
       'Total Attendees': reg.adultsCount + reg.childrenCount,
       'Check-in Status': reg.isCheckedIn === true ? 'Checked In' : 'Not Checked In',
+      'Checked In Adults': reg.checkedInAdults || 0,
+      'Checked In Children': reg.checkedInChildren || 0,
+      'Total Checked In': (reg.checkedInAdults || 0) + (reg.checkedInChildren || 0),
       'Registration Date': reg.createdAt ? new Date(reg.createdAt).toLocaleDateString('en-US', {
         year: 'numeric',
         month: '2-digit',
@@ -241,7 +344,8 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     { label: 'Name', key: 'Name' },
     { label: 'Age Group', key: 'Age Group' },
     { label: "Father's/Husband's Name", key: "Father's/Husband's Name" },
-    { label: 'House Name', key: 'House Name' },
+    { label: 'House/Family Name', key: 'House/Family Name' },
+    { label: 'Email', key: 'Email' },
     { label: 'Mobile Number', key: 'Mobile Number' },
     { label: 'WhatsApp Number', key: 'WhatsApp Number' },
     { label: 'Residing Emirates', key: 'Residing Emirates' },
@@ -251,6 +355,9 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     { label: 'Children Count', key: 'Children Count' },
     { label: 'Total Attendees', key: 'Total Attendees' },
     { label: 'Check-in Status', key: 'Check-in Status' },
+    { label: 'Checked In Adults', key: 'Checked In Adults' },
+    { label: 'Checked In Children', key: 'Checked In Children' },
+    { label: 'Total Checked In', key: 'Total Checked In' },
     { label: 'Registration Date', key: 'Registration Date' }
   ];
 
@@ -426,12 +533,12 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   {[
                     { key: 'name', label: 'Name' },
                     { key: 'ageGroup', label: 'Age Group' },
-                    { key: 'houseName', label: 'House Name' },
+                    { key: 'houseName', label: 'House/Family Name' },
                     { key: 'mobileNumber', label: 'Mobile' },
                     { key: 'residingEmirates', label: 'Emirates' },
                     { key: 'adultsCount', label: 'Adults' },
                     { key: 'childrenCount', label: 'Children' },
-                    { key: 'isCheckedIn', label: 'Check-in' },
+                    { key: 'isCheckedIn', label: 'Status' },
                     { key: 'createdAt', label: 'Registered' }
                   ].map(({ key, label }) => (
                     <th
@@ -490,13 +597,21 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                         {registration.childrenCount}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          registration.isCheckedIn === true
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}>
-                          {registration.isCheckedIn === true ? 'Checked In' : 'Not Checked In'}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            registration.isCheckedIn === true
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}>
+                            {registration.isCheckedIn === true ? 'Checked In' : 'Not Checked In'}
+                          </span>
+                          {registration.isCheckedIn && (
+                            <div className="text-xs text-gray-600 mt-1">
+                              A: {registration.checkedInAdults || 0}/{registration.adultsCount} | 
+                              C: {registration.checkedInChildren || 0}/{registration.childrenCount}
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {registration.createdAt ? new Date(registration.createdAt).toLocaleDateString('en-US', {
@@ -506,7 +621,8 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                         }) : ''}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
+                          {/* Check-in/Check-out Button */}
                           <button
                             type="button"
                             onClick={(e) => {
@@ -514,7 +630,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                               e.stopPropagation();
                               toggleCheckIn(registration._id!, registration.isCheckedIn || false);
                             }}
-                            className={`p-1 rounded text-xs transition-colors ${
+                            className={`flex items-center gap-1 px-3 py-1 rounded text-xs font-medium transition-colors ${
                               registration.isCheckedIn === true
                                 ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
                                 : "bg-green-100 text-green-800 hover:bg-green-200"
@@ -523,7 +639,13 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                             disabled={loading}
                           >
                             {registration.isCheckedIn === true ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                            {registration.isCheckedIn === true ? 'Check Out' : 'Check In'}
                           </button>
+                          
+                          {/* Separator */}
+                          <div className="w-px h-6 bg-gray-300"></div>
+                          
+                          {/* Delete Button */}
                           <button
                             type="button"
                             onClick={(e) => {
@@ -531,7 +653,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                               e.stopPropagation();
                               deleteRegistration(registration._id!, registration.name);
                             }}
-                            className="p-1 rounded text-xs bg-red-100 text-red-800 hover:bg-red-200"
+                            className="p-2 rounded text-xs bg-red-100 text-red-800 hover:bg-red-200 transition-colors"
                             title="Delete Registration"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -546,6 +668,119 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
           </div>
         </div>
       </div>
+      
+      {/* Check-in Modal */}
+      {checkInModal.isOpen && checkInModal.registration && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-medium text-gray-900">
+                Check In - {checkInModal.registration.name}
+              </h3>
+              <p className="text-sm text-gray-500 mt-1">
+                {checkInModal.registration.houseName}
+              </p>
+            </div>
+            
+            <div className="px-6 py-4">
+              <div className="space-y-4">
+                <div className="text-sm text-gray-600">
+                  <p>Total registered: {checkInModal.registration.adultsCount + checkInModal.registration.childrenCount} people</p>
+                  <p className="text-xs text-gray-500 mt-1">Select how many people are checking in:</p>
+                </div>
+                
+                {/* Adults Count */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Adults (12+ years) - Max: {checkInModal.registration.adultsCount}
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setCheckInModal(prev => ({
+                        ...prev,
+                        adultsCount: Math.max(0, prev.adultsCount - 1)
+                      }))}
+                      className="w-8 h-8 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 flex items-center justify-center"
+                      disabled={checkInModal.adultsCount <= 0}
+                    >
+                      -
+                    </button>
+                    <span className="w-8 text-center font-medium">{checkInModal.adultsCount}</span>
+                    <button
+                      type="button"
+                      onClick={() => setCheckInModal(prev => ({
+                        ...prev,
+                        adultsCount: Math.min(prev.registration!.adultsCount, prev.adultsCount + 1)
+                      }))}
+                      className="w-8 h-8 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 flex items-center justify-center"
+                      disabled={checkInModal.adultsCount >= checkInModal.registration.adultsCount}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Children Count */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Children (below 12 years) - Max: {checkInModal.registration.childrenCount}
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setCheckInModal(prev => ({
+                        ...prev,
+                        childrenCount: Math.max(0, prev.childrenCount - 1)
+                      }))}
+                      className="w-8 h-8 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 flex items-center justify-center"
+                      disabled={checkInModal.childrenCount <= 0}
+                    >
+                      -
+                    </button>
+                    <span className="w-8 text-center font-medium">{checkInModal.childrenCount}</span>
+                    <button
+                      type="button"
+                      onClick={() => setCheckInModal(prev => ({
+                        ...prev,
+                        childrenCount: Math.min(prev.registration!.childrenCount, prev.childrenCount + 1)
+                      }))}
+                      className="w-8 h-8 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 flex items-center justify-center"
+                      disabled={checkInModal.childrenCount >= checkInModal.registration.childrenCount}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="bg-gray-50 p-3 rounded-md">
+                  <p className="text-sm font-medium text-gray-900">
+                    Total checking in: {checkInModal.adultsCount + checkInModal.childrenCount} people
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={closeCheckInModal}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleCheckIn}
+                disabled={loading || (checkInModal.adultsCount + checkInModal.childrenCount === 0)}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Processing...' : 'Check In'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

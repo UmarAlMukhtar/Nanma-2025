@@ -34,6 +34,18 @@ const RegistrationSchema = new Schema<IRegistration>({
     trim: true,
     maxlength: [100, 'House name cannot exceed 100 characters']
   },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    trim: true,
+    lowercase: true,
+    validate: {
+      validator: function(v: string) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      },
+      message: 'Please enter a valid email address'
+    }
+  },
   mobileCountryCode: {
     type: String,
     required: [true, 'Mobile country code is required'],
@@ -111,6 +123,16 @@ const RegistrationSchema = new Schema<IRegistration>({
   isCheckedIn: {
     type: Boolean,
     default: false
+  },
+  checkedInAdults: {
+    type: Number,
+    default: 0,
+    min: [0, 'Checked in adults count cannot be negative']
+  },
+  checkedInChildren: {
+    type: Number,
+    default: 0,
+    min: [0, 'Checked in children count cannot be negative']
   }
 
 }, {
@@ -122,6 +144,7 @@ const RegistrationSchema = new Schema<IRegistration>({
 // Indexes for better query performance
 RegistrationSchema.index({ createdAt: -1 });
 RegistrationSchema.index({ mobileCountryCode: 1, mobileNumber: 1 }, { unique: true });
+RegistrationSchema.index({ email: 1 }, { unique: true });
 RegistrationSchema.index({ name: 'text', houseName: 'text' });
 
 // Virtual for total attendees per registration

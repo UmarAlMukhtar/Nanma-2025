@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
         ageGroup: registration.ageGroup,
         fatherHusbandName: registration.fatherHusbandName,
         houseName: registration.houseName,
+        email: registration.email,
         mobileCountryCode: registration.mobileCountryCode,
         mobileNumber: registration.mobileNumber,
         whatsappCountryCode: registration.whatsappCountryCode,
@@ -62,14 +63,54 @@ export async function POST(request: NextRequest) {
         placeOfResidenceInPuthiyakavu: registration.placeOfResidenceInPuthiyakavu,
         adultsCount: registration.adultsCount,
         childrenCount: registration.childrenCount,
+        isCheckedIn: registration.isCheckedIn,
+        checkedInAdults: registration.checkedInAdults,
+        checkedInChildren: registration.checkedInChildren,
         createdAt: registration.createdAt,
         updatedAt: registration.updatedAt
       },
       message: 'Registration successful! Thank you for registering for NANMA Family Fest 2025.'
     }, { status: 201 });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Registration error:', error);
+    
+    // Handle duplicate key errors (mobile number or email already exists)
+    if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
+      const mongoError = error as { keyPattern?: Record<string, number> };
+      const duplicateField = mongoError.keyPattern;
+      if (duplicateField?.email) {
+        return NextResponse.json<ApiResponse<null>>({
+          success: false,
+          error: 'Email already registered',
+          message: 'This email address is already registered. Please use a different email or contact support if this is your email.'
+        }, { status: 409 });
+      }
+      if (duplicateField?.mobileNumber || duplicateField?.mobileCountryCode) {
+        return NextResponse.json<ApiResponse<null>>({
+          success: false,
+          error: 'Mobile number already registered',
+          message: 'This mobile number is already registered. Please use a different mobile number or contact support if this is your number.'
+        }, { status: 409 });
+      }
+      // Generic duplicate error
+      return NextResponse.json<ApiResponse<null>>({
+        success: false,
+        error: 'Duplicate registration',
+        message: 'Some information provided is already registered. Please check your details and try again.'
+      }, { status: 409 });
+    }
+    
+    // Handle validation errors
+    if (error && typeof error === 'object' && 'name' in error && error.name === 'ValidationError') {
+      const validationError = error as { errors: Record<string, { message: string }> };
+      const validationErrors = Object.values(validationError.errors).map((err) => err.message);
+      return NextResponse.json<ApiResponse<null>>({
+        success: false,
+        error: 'Validation failed',
+        message: `Please fix the following errors: ${validationErrors.join(', ')}`
+      }, { status: 400 });
+    }
     
     // Handle timeout errors
     if (error instanceof Error && (error.message.includes('timeout') || error.message.includes('ECONNRESET'))) {

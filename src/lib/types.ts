@@ -1,9 +1,22 @@
+// UAE Emirates options
+export const UAE_EMIRATES = [
+  'Abu Dhabi',
+  'Dubai', 
+  'Sharjah',
+  'Ajman',
+  'Umm Al Quwain',
+  'Ras Al Khaimah',
+  'Fujairah',
+  'Other'
+] as const;
+
 export interface Registration {
   _id?: string;
   name: string;
   ageGroup: string;
   fatherHusbandName: string;
   houseName: string;
+  email: string;
   mobileCountryCode: string;
   mobileNumber: string;
   whatsappCountryCode?: string;
@@ -14,6 +27,8 @@ export interface Registration {
   adultsCount: number;
   childrenCount: number;
   isCheckedIn?: boolean;
+  checkedInAdults?: number;
+  checkedInChildren?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -23,6 +38,7 @@ export interface RegistrationFormData {
   ageGroup: string;
   fatherHusbandName: string;
   houseName: string;
+  email: string;
   mobileCountryCode: string;
   mobileNumber: string;
   whatsappCountryCode?: string;

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registrationSchema, RegistrationFormSchema, formatPhoneNumber, parsePhoneNumber, validatePhoneNumber } from '@/lib/validation';
-import { AGE_GROUPS, COUNTRY_CODES, PLACE_OF_RESIDENCE_OPTIONS } from '@/lib/types';
+import { AGE_GROUPS, COUNTRY_CODES, PLACE_OF_RESIDENCE_OPTIONS, UAE_EMIRATES } from '@/lib/types';
 import { cn } from '@/utils/cn';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
@@ -90,21 +90,33 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
       if (result.success) {
         setSubmitMessage({
           type: 'success',
-          message: result.message || 'Registration successful!'
+          message: result.message || 'Registration successful! Welcome to NANMA Family Fest 2025!'
         });
         reset();
         onSuccess?.();
       } else {
+        // Enhanced error handling for specific error types
+        let errorMessage = result.message || 'Registration failed. Please try again.';
+        
+        // Handle duplicate registration errors with specific guidance
+        if (response.status === 409) {
+          if (result.error === 'Mobile number already registered') {
+            errorMessage = 'This mobile number is already registered. If this is your number, please contact support or use a different mobile number.';
+          } else if (result.error === 'Email already registered') {
+            errorMessage = 'This email address is already registered. If this is your email, please contact support or use a different email address.';
+          }
+        }
+        
         setSubmitMessage({
           type: 'error',
-          message: result.message || 'Registration failed. Please try again.'
+          message: errorMessage
         });
       }
     } catch (error) {
       console.error('Form submission error:', error);
       setSubmitMessage({
         type: 'error',
-        message: 'Network error. Please check your connection and try again.'
+        message: 'Network error. Please check your internet connection and try again.'
       });
     } finally {
       setIsSubmitting(false);
@@ -120,7 +132,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
         <p className="text-gray-600 mb-1">Registration Form</p>
         <div className="text-sm text-gray-500">
           <p>നന്മ പുതിയകാവ് മഹല്ല്  അസ്സോസിയേഷൻ, ദുബായ് കമ്മിറ്റി</p>
-          <p className="mt-1">Date: November, 2025 | Venue: Woodlem Park School, Qusais, Dubai</p>
+          <p className="mt-1">Date: November 16th, 2025 | Venue: Woodlem Park School, Qusais, Dubai</p>
         </div>
       </div>
 
@@ -204,10 +216,10 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
           )}
         </div>
 
-        {/* House Name */}
+        {/* House/Family Name */}
         <div>
           <label htmlFor="houseName" className="block text-sm font-medium text-gray-700 mb-2">
-            House Name *
+            House/Family Name *
           </label>
           <input
             type="text"
@@ -217,10 +229,30 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
               "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
               errors.houseName ? "border-red-300" : "border-gray-300"
             )}
-            placeholder="Enter your house name"
+            placeholder="Enter your house/family name"
           />
           {errors.houseName && (
             <p className="mt-1 text-sm text-red-600">{errors.houseName.message}</p>
+          )}
+        </div>
+
+        {/* Email */}
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            Email *
+          </label>
+          <input
+            type="email"
+            id="email"
+            {...register('email')}
+            className={cn(
+              "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
+              errors.email ? "border-red-300" : "border-gray-300"
+            )}
+            placeholder="Enter your email address"
+          />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
           )}
         </div>
 
@@ -253,7 +285,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
                 "flex-1 min-w-0 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
                 errors.mobileNumber ? "border-red-300" : "border-gray-300"
               )}
-              placeholder="Enter mobile number or paste full international number"
+              placeholder="Enter mobile number"
             />
           </div>
           {(errors.mobileCountryCode || errors.mobileNumber) && (
@@ -293,7 +325,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
                 "flex-1 min-w-0 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
                 errors.whatsappNumber ? "border-red-300" : "border-gray-300"
               )}
-              placeholder="Enter WhatsApp number or paste full international number"
+              placeholder="Enter WhatsApp number"
             />
           </div>
           {(errors.whatsappCountryCode || errors.whatsappNumber) && (
@@ -308,16 +340,21 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
           <label htmlFor="residingEmirates" className="block text-sm font-medium text-gray-700 mb-2">
             Residing Emirates *
           </label>
-          <input
-            type="text"
+          <select
             id="residingEmirates"
             {...register('residingEmirates')}
             className={cn(
               "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
               errors.residingEmirates ? "border-red-300" : "border-gray-300"
             )}
-            placeholder="e.g., Dubai, Abu Dhabi, Sharjah, Other"
-          />
+          >
+            <option value="">Select your emirate</option>
+            {UAE_EMIRATES.map((emirate) => (
+              <option key={emirate} value={emirate}>
+                {emirate}
+              </option>
+            ))}
+          </select>
           {errors.residingEmirates && (
             <p className="mt-1 text-sm text-red-600">{errors.residingEmirates.message}</p>
           )}

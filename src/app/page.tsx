@@ -47,17 +47,26 @@ export default function Home() {
                   <Calendar className="w-8 h-8 text-green-600 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-gray-900">Date & Time</h3>
-                    <p className="text-gray-600">November 2025</p>
+                    <p className="text-gray-600">November 16th, 2025</p>
                     <p className="text-sm text-gray-500">Full day event</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-lg">
                   <MapPin className="w-8 h-8 text-blue-600 flex-shrink-0" />
-                  <div>
+                  <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">Venue</h3>
                     <p className="text-gray-600">Woodlem Park School</p>
                     <p className="text-sm text-gray-500">Qusais, Dubai, UAE</p>
+                    <a 
+                      href="https://maps.google.com/maps?q=Woodlem+Park+School+Qusais+Dubai"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 mt-2 text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      <MapPin className="w-4 h-4" />
+                      View on Google Maps
+                    </a>
                   </div>
                 </div>
 
@@ -66,7 +75,7 @@ export default function Home() {
                   <div>
                     <h3 className="font-semibold text-gray-900">Registration</h3>
                     <p className="text-gray-600">Open now!</p>
-                    <p className="text-sm text-gray-500">Limited spots available</p>
+                    <p className="text-sm text-red-600 font-medium">Registration ends: October 30, 2025</p>
                   </div>
                 </div>
               </div>
@@ -74,23 +83,43 @@ export default function Home() {
 
             {/* What to Expect */}
             <div className="bg-white rounded-xl shadow-lg p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">What to Expect</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">What to Expect: </h3>
+              <div className="space-y-4 mb-6">
                 {[
-                  'Cultural Performances',
-                  'Traditional Food',
-                  'Kids Activities',
-                  'Community Games',
-                  'Prize Distribution',
-                  'Photography Session',
-                  'Cultural Competitions',
-                  'Family Entertainment'
-                ].map((activity, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-gray-700">{activity}</span>
+                  { event: 'Football Competition', date: '01/11/2025' },
+                  { event: 'Badminton Competition', date: '08/11/2025' },
+                  { event: 'Volleyball Competition', date: '15/11/2025' },
+                  { event: 'Cooking Competition', date: '15/11/2025' },
+                  { event: 'Tug of War', date: '16/11/2025' },
+                  { event: 'Great Family Fest Meet', date: '16/11/2025' }
+                ].map((competition, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-100">
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="text-gray-800 font-medium">{competition.event}</span>
+                    </div>
+                    <span className="text-green-600 font-semibold text-sm">{competition.date}</span>
                   </div>
                 ))}
+              </div>
+              
+              <div className="border-t border-gray-200 pt-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">Additional Activities</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    'Cultural Performances',
+                    'Traditional Food',
+                    'Kids Activities',
+                    'Prize Distribution',
+                    'Photography Session',
+                    'Family Entertainment'
+                  ].map((activity, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span className="text-gray-700">{activity}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -111,7 +140,7 @@ export default function Home() {
               <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800">
                   <strong>Important:</strong> Registration is mandatory for attendance. 
-                  Please ensure all family member details are accurate.
+                  Only one registration is required for all family members.
                 </p>
               </div>
             </div>

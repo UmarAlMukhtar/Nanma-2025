@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AGE_GROUPS, COUNTRY_CODES, PLACE_OF_RESIDENCE_OPTIONS } from './types';
+import { AGE_GROUPS, COUNTRY_CODES, PLACE_OF_RESIDENCE_OPTIONS, UAE_EMIRATES } from './types';
 
 const validCountryCodes = COUNTRY_CODES.map(c => c.code);
 
@@ -25,8 +25,14 @@ export const registrationSchema = z.object({
     .trim(),
   
   houseName: z.string()
-    .min(1, 'House name is required')
-    .max(100, 'House name cannot exceed 100 characters')
+    .min(1, 'House/Family name is required')
+    .max(100, 'House/Family name cannot exceed 100 characters')
+    .trim(),
+  
+  email: z.string()
+    .min(1, 'Email is required')
+    .email('Please enter a valid email address')
+    .max(100, 'Email cannot exceed 100 characters')
     .trim(),
   
   mobileCountryCode: z.string()
@@ -64,10 +70,9 @@ export const registrationSchema = z.object({
       message: 'WhatsApp number must be 7-15 digits'
     }),
   
-  residingEmirates: z.string()
-    .min(1, 'Residing Emirates is required')
-    .max(50, 'Residing Emirates cannot exceed 50 characters')
-    .trim(),
+  residingEmirates: z.enum(UAE_EMIRATES, {
+    errorMap: () => ({ message: 'Please select a valid emirate' })
+  }),
   
   locationIfOther: z.string()
     .max(100, 'Location cannot exceed 100 characters')
