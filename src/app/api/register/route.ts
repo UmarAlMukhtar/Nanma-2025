@@ -102,8 +102,8 @@ export async function POST(request: NextRequest) {
     }
     
     // Handle validation errors
-    if (error && typeof error === 'object' && 'name' in error && error.name === 'ValidationError') {
-      const validationError = error as { errors: Record<string, { message: string }> };
+    if (error && typeof error === 'object' && 'name' in error && error.name === 'ValidationError' && 'errors' in error) {
+      const validationError = error as unknown as { errors: Record<string, { message: string }> };
       const validationErrors = Object.values(validationError.errors).map((err) => err.message);
       return NextResponse.json<ApiResponse<null>>({
         success: false,
