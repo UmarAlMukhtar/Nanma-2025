@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { registrationSchema, RegistrationFormSchema, formatPhoneNumber, parsePhoneNumber, validatePhoneNumber } from '@/lib/validation';
 import { AGE_GROUPS, COUNTRY_CODES, PLACE_OF_RESIDENCE_OPTIONS, UAE_EMIRATES } from '@/lib/types';
 import { cn } from '@/utils/cn';
-import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle, X, PartyPopper } from 'lucide-react';
 
 interface RegistrationFormProps {
   onSuccess?: () => void;
@@ -18,6 +18,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
     type: 'success' | 'error';
     message: string;
   } | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const {
     register,
@@ -92,6 +93,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
           type: 'success',
           message: result.message || 'Registration successful! Welcome to NANMA Family Fest 2025!'
         });
+        setShowSuccessModal(true);
         reset();
         onSuccess?.();
       } else {
@@ -480,6 +482,54 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
         <p>For queries, please contact the organizing committee.</p>
         <p className="mt-1">All fields marked with * are required.</p>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 backdrop-blur-md bg-white/30 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 relative animate-in fade-in zoom-in duration-300">
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                <PartyPopper className="w-8 h-8 text-green-600" />
+              </div>
+              
+              <h3 className="text-2xl font-bold text-green-800 mb-2">
+                Registration Successful! 🎉
+              </h3>
+              
+              <p className="text-gray-600 mb-4">
+                Welcome to NANMA Family Fest 2025! Your registration has been confirmed.
+              </p>
+              
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <p className="text-sm text-green-800 font-medium">
+                  📅 Event Date: November 16th, 2025
+                </p>
+                <p className="text-sm text-green-800">
+                  📍 Venue: Woodlem Park School, Qusais, Dubai
+                </p>
+              </div>
+              
+              <p className="text-sm text-gray-500 mb-6">
+                You will receive further details via email and WhatsApp closer to the event date.
+              </p>
+              
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+              >
+                Got it, thanks!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

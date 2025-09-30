@@ -50,10 +50,10 @@ export async function GET(request: NextRequest) {
       ]
     );
     
-    console.log('Migration result - Fixed checked-in registrations:', {
-      matchedCount: migrationResult.matchedCount,
-      modifiedCount: migrationResult.modifiedCount
-    });
+    // console.log('Migration result - Fixed checked-in registrations:', {
+    //   matchedCount: migrationResult.matchedCount,
+    //   modifiedCount: migrationResult.modifiedCount
+    // });
     
     // Force save all modified documents to ensure persistence
     if (migrationResult.modifiedCount > 0) {
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
         await reg.save();
       }
       
-      console.log('Forced save completed for', modifiedRegistrations.length, 'registrations');
+      // console.log('Forced save completed for', modifiedRegistrations.length, 'registrations');
     }
 
     // Get query parameters
@@ -106,24 +106,24 @@ export async function GET(request: NextRequest) {
       ]);
 
       // Debug: Let's see what's in the database
-      const debugRegistrations = await RegistrationModel.find({ isCheckedIn: true }).lean();
-      console.log('Debug - Checked in registrations:', debugRegistrations.map(r => ({
-        name: r.name,
-        isCheckedIn: r.isCheckedIn,
-        adultsCount: r.adultsCount,
-        childrenCount: r.childrenCount,
-        checkedInAdults: r.checkedInAdults,
-        checkedInChildren: r.checkedInChildren
-      })));
+      // const debugRegistrations = await RegistrationModel.find({ isCheckedIn: true }).lean();
+      // console.log('Debug - Checked in registrations:', debugRegistrations.map(r => ({
+      //   name: r.name,
+      //   isCheckedIn: r.isCheckedIn,
+      //   adultsCount: r.adultsCount,
+      //   childrenCount: r.childrenCount,
+      //   checkedInAdults: r.checkedInAdults,
+      //   checkedInChildren: r.checkedInChildren
+      // })));
 
       const stats = aggregateResult[0] || { totalAdults: 0, totalChildren: 0 };
       const checkedInStats = checkedInAggregateResult[0] || { checkedInAdults: 0, checkedInChildren: 0 };
       
-      console.log('Stats calculation:', {
-        totalStats: stats,
-        checkedInStats: checkedInStats,
-        checkedInRegistrations
-      });
+      // console.log('Stats calculation:', {
+      //   totalStats: stats,
+      //   checkedInStats: checkedInStats,
+      //   checkedInRegistrations
+      // });
       
       const totalAttendees = stats.totalAdults + stats.totalChildren;
       const checkedInAttendees = checkedInStats.checkedInAdults + checkedInStats.checkedInChildren;
@@ -246,10 +246,10 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
     const { id, isCheckedIn, checkedInAdults, checkedInChildren } = body;
 
-    console.log('PATCH request received:', { id, isCheckedIn, checkedInAdults, checkedInChildren });
+    // console.log('PATCH request received:', { id, isCheckedIn, checkedInAdults, checkedInChildren });
 
     if (!id || typeof isCheckedIn !== 'boolean') {
-      console.log('Invalid request data:', { id, isCheckedIn, typeofIsCheckedIn: typeof isCheckedIn });
+      // console.log('Invalid request data:', { id, isCheckedIn, typeofIsCheckedIn: typeof isCheckedIn });
       return NextResponse.json<ApiResponse<null>>({
         success: false,
         error: 'Missing required fields',
@@ -274,7 +274,7 @@ export async function PATCH(request: NextRequest) {
       updateData.checkedInChildren = 0;
     }
 
-    console.log('Update data being sent to database:', updateData);
+    // console.log('Update data being sent to database:', updateData);
 
     // Update registration check-in status with explicit persistence
     const registration = await RegistrationModel.findByIdAndUpdate(
@@ -286,18 +286,18 @@ export async function PATCH(request: NextRequest) {
     // Ensure data is persisted - explicit save operation
     if (registration) {
       await registration.save();
-      console.log('Registration saved successfully to database');
+      // console.log('Registration saved successfully to database');
     }
 
-    console.log('Updated registration result:', registration ? {
-      id: registration._id,
-      name: registration.name,
-      isCheckedIn: registration.isCheckedIn,
-      checkedInAdults: registration.checkedInAdults,
-      checkedInChildren: registration.checkedInChildren,
-      adultsCount: registration.adultsCount,
-      childrenCount: registration.childrenCount
-    } : 'not found');
+    // console.log('Updated registration result:', registration ? {
+    //   id: registration._id,
+    //   name: registration.name,
+    //   isCheckedIn: registration.isCheckedIn,
+    //   checkedInAdults: registration.checkedInAdults,
+    //   checkedInChildren: registration.checkedInChildren,
+    //   adultsCount: registration.adultsCount,
+    //   childrenCount: registration.childrenCount
+    // } : 'not found');
 
     // Verify the data was actually saved by re-fetching
     const verifyRegistration = await RegistrationModel.findById(id).lean();
@@ -308,13 +308,13 @@ export async function PATCH(request: NextRequest) {
       checkedInAdults: number;
       checkedInChildren: number;
     } | null;
-    console.log('Verification - Data in database after save:', {
-      id: verifyData?._id?.toString(),
-      name: verifyData?.name,
-      isCheckedIn: verifyData?.isCheckedIn,
-      checkedInAdults: verifyData?.checkedInAdults,
-      checkedInChildren: verifyData?.checkedInChildren
-    });
+    // console.log('Verification - Data in database after save:', {
+    //   id: verifyData?._id?.toString(),
+    //   name: verifyData?.name,
+    //   isCheckedIn: verifyData?.isCheckedIn,
+    //   checkedInAdults: verifyData?.checkedInAdults,
+    //   checkedInChildren: verifyData?.checkedInChildren
+    // });
 
     if (!registration) {
       return NextResponse.json<ApiResponse<null>>({
