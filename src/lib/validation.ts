@@ -89,6 +89,15 @@ export const registrationSchema = z.object({
   childrenCount: z.number()
     .min(0, 'Children count cannot be negative')
     .max(50, 'Children count cannot exceed 50')
+}).refine((data) => {
+  // If "Other" is selected in emirates, locationIfOther is required
+  if (data.residingEmirates.toLowerCase().includes('other')) {
+    return data.locationIfOther && data.locationIfOther.trim().length > 0;
+  }
+  return true;
+}, {
+  message: 'Location is required when "Other" is selected',
+  path: ['locationIfOther']
 });
 
 export type RegistrationFormSchema = z.infer<typeof registrationSchema>;

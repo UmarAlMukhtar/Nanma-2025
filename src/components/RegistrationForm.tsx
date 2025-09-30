@@ -19,6 +19,12 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
     message: string;
   } | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [emailValidation, setEmailValidation] = useState<{
+    isValid: boolean;
+    isUnique: boolean | null;
+    isChecking: boolean;
+    message: string;
+  }>({ isValid: false, isUnique: null, isChecking: false, message: '' });
 
   const {
     register,
@@ -39,6 +45,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
 
   const watchedResidingEmirates = watch('residingEmirates');
   const shouldShowLocationField = watchedResidingEmirates?.toLowerCase().includes('other');
+  const watchedEmail = watch('email');
 
   const handlePhoneInput = (fieldName: 'mobileNumber' | 'whatsappNumber', countryCodeField: 'mobileCountryCode' | 'whatsappCountryCode') => {
     return (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,10 +80,100 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
     };
   };
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const checkEmailUniqueness = React.useCallback(async (email: string) => {
+    if (!email || !validateEmail(email)) return;
+    
+    setEmailValidation(prev => ({ ...prev, isChecking: true, message: 'Checking email availability...' }));
+    
+    try {
+      const response = await fetch('/api/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      
+      const result = await response.json();
+      
+      if (result.isUnique) {
+        setEmailValidation({
+          isValid: true,
+          isUnique: true,
+          isChecking: false,
+          message: '✓ Email is available'
+        });
+      } else {
+        setEmailValidation({
+          isValid: false,
+          isUnique: false,
+          isChecking: false,
+          message: '✗ This email is already registered'
+        });
+      }
+    } catch {
+      setEmailValidation({
+        isValid: false,
+        isUnique: null,
+        isChecking: false,
+        message: 'Unable to check email availability'
+      });
+    }
+  }, []);
+
+  // Debounced email validation
+  React.useEffect(() => {
+    if (!watchedEmail) {
+      setEmailValidation({ isValid: false, isUnique: null, isChecking: false, message: '' });
+      return;
+    }
+
+    const isValidFormat = validateEmail(watchedEmail);
+    
+    if (!isValidFormat) {
+      setEmailValidation({
+        isValid: false,
+        isUnique: null,
+        isChecking: false,
+        message: watchedEmail.length > 0 ? '✗ Invalid email format' : ''
+      });
+      return;
+    }
+
+    const debounceTimer = setTimeout(() => {
+      checkEmailUniqueness(watchedEmail);
+    }, 1000);
+
+    return () => clearTimeout(debounceTimer);
+  }, [watchedEmail, checkEmailUniqueness]);
+
   const onSubmit = async (data: RegistrationFormSchema) => {
     try {
       setIsSubmitting(true);
       setSubmitMessage(null);
+
+      // Check if email validation is complete and unique
+      if (emailValidation.isUnique === false) {
+        setSubmitMessage({
+          type: 'error',
+          message: 'Please use a different email address. This email is already registered.'
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // If email is still being checked, wait a moment
+      if (emailValidation.isChecking) {
+        setSubmitMessage({
+          type: 'error',
+          message: 'Please wait for email verification to complete.'
+        });
+        setIsSubmitting(false);
+        return;
+      }
 
       const response = await fetch('/api/register', {
         method: 'POST',
@@ -243,18 +340,35 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
             Email *
           </label>
-          <input
-            type="email"
-            id="email"
-            {...register('email')}
-            className={cn(
-              "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
-              errors.email ? "border-red-300" : "border-gray-300"
+          <div className="relative">
+            <input
+              type="email"
+              id="email"
+              {...register('email')}
+              className={cn(
+                "w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500",
+                errors.email ? "border-red-300" : 
+                emailValidation.isUnique === false ? "border-red-300" :
+                emailValidation.isUnique === true ? "border-green-300" : "border-gray-300"
+              )}
+              placeholder="Enter your email address"
+            />
+            {emailValidation.isChecking && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+              </div>
             )}
-            placeholder="Enter your email address"
-          />
+          </div>
           {errors.email && (
             <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+          )}
+          {!errors.email && emailValidation.message && (
+            <p className={cn(
+              "mt-1 text-sm",
+              emailValidation.isUnique === true ? "text-green-600" : "text-red-600"
+            )}>
+              {emailValidation.message}
+            </p>
           )}
         </div>
 
@@ -366,7 +480,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
         {shouldShowLocationField && (
           <div>
             <label htmlFor="locationIfOther" className="block text-sm font-medium text-gray-700 mb-2">
-              Location (if above is &quot;other&quot;)
+              Location (if above is &quot;other&quot;) *
             </label>
             <input
               type="text"
@@ -457,11 +571,11 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
         <div className="pt-6">
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || emailValidation.isUnique === false || emailValidation.isChecking}
             className={cn(
               "w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white",
               "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500",
-              isSubmitting
+              (isSubmitting || emailValidation.isUnique === false || emailValidation.isChecking)
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-green-600 hover:bg-green-700 active:bg-green-800"
             )}
@@ -470,6 +584,11 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Submitting...
+              </>
+            ) : emailValidation.isChecking ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Checking email...
               </>
             ) : (
               'Register for NANMA Family Fest 2025'
