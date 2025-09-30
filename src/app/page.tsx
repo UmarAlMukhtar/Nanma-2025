@@ -83,7 +83,7 @@ export default function Home() {
                   <div>
                     <h3 className="font-semibold text-gray-900">Registration</h3>
                     <p className="text-gray-600">Open now!</p>
-                    <p className="text-sm text-red-600 font-medium">Registration ends: November 14th, 2025</p>
+                    <p className="text-sm text-red-600 font-medium">Registration ends: November 14th, 2025, 7 PM</p>
                   </div>
                 </div>
               </div>
