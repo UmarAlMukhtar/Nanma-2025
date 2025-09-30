@@ -137,7 +137,7 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Phone className="w-5 h-5 text-green-600" />
-                  <span className="text-gray-700">For queries: +971 XX XXX XXXX</span>
+                  <span className="text-gray-700">For queries: <a href="tel:+971503079497">+971 50 307 9497</a></span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-green-600" />
