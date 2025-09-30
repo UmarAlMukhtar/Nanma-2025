@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import RegistrationForm from '@/components/RegistrationForm';
 import { Calendar, MapPin, Users, Clock, Phone, Mail } from 'lucide-react';
 
@@ -10,8 +11,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="flex items-center gap-4">
-              <img src="/logo.png" alt="NANMA Logo" className="h-30 w-auto flex-shrink-0" />
-              <img src="/nanma.png" alt="NANMA" className="h-30 w-auto flex-shrink-0 md:hidden" />
+              <Image src="/logo.png" alt="NANMA Logo" width={120} height={120} className="h-30 w-auto flex-shrink-0" />
+              <Image src="/nanma.png" alt="NANMA" width={120} height={120} className="h-30 w-auto flex-shrink-0 md:hidden" />
             </div>
             <div className="text-center flex-1">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-green-800 mb-2">
@@ -24,7 +25,7 @@ export default function Home() {
                 &apos;നന്മ&apos; പുതിയകാവ് മഹല്ല്  അസ്സോസിയേഷൻ, ദുബായ് കമ്മിറ്റി
               </p>
             </div>
-            <img src="/nanma.png" alt="NANMA" className="h-30 w-auto flex-shrink-0 hidden md:block" />
+            <Image src="/nanma.png" alt="NANMA" width={120} height={120} className="h-30 w-auto flex-shrink-0 hidden md:block" />
           </div>
         </div>
       </header>
