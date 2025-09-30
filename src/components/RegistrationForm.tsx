@@ -516,16 +516,19 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
                 </p>
               </div>
               
-              <p className="text-sm text-gray-500 mb-6">
-                You will receive further details via email and WhatsApp closer to the event date.
+              <p className="text-sm text-gray-500 mb-4">
+                For further updates, please keep updated with the NANMA Family Fest 2025 WhatsApp group.
               </p>
               
-              <button
+              <a
+                href="https://chat.whatsapp.com/F437pbjGMet9mgytGpAVqt?mode=ems_wa_t"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setShowSuccessModal(false)}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+                className="inline-flex items-center justify-center w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition-colors"
               >
-                Got it, thanks!
-              </button>
+                📱 Join WhatsApp Group
+              </a>
             </div>
           </div>
         </div>
