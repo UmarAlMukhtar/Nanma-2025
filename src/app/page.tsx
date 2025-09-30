@@ -99,6 +99,7 @@ export default function Home() {
                   { event: 'Volleyball Competition', date: '15/11/2025' },
                   { event: 'Cooking Competition', date: '15/11/2025' },
                   { event: 'Tug of War', date: '16/11/2025' },
+                  { event: 'Family Market', date: '16/11/2025' },
                   { event: 'Great Family Fest Meet', date: '16/11/2025' }
                 ].map((competition, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-100">
