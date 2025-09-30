@@ -12,10 +12,15 @@ const nextConfig: NextConfig = {
   // Compress pages
   compress: true,
 
+  // Server external packages (moved from experimental)
+  serverExternalPackages: ['mongoose'],
+
+  // Set output file tracing root to silence workspace warning
+  outputFileTracingRoot: __dirname,
+
   // Enable experimental features
   experimental: {
     optimizePackageImports: ['lucide-react'],
-    serverComponentsExternalPackages: ['mongoose'],
   },
 
   // Webpack optimizations

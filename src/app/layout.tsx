@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import "./globals.css";
@@ -7,6 +7,11 @@ const inter = Inter({
   subsets: ["latin"],
 variable: "--font-inter",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   title: "NANMA Family Fest 2025 - Registration",
@@ -24,7 +29,6 @@ export const metadata: Metadata = {
     title: "NANMA Family Fest 2025",
     description: "Register now for the biggest family event of the year!",
   },
-  viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",
 };
 
