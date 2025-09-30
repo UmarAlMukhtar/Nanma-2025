@@ -131,7 +131,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps) {
         </h2>
         <p className="text-gray-600 mb-1">Registration Form</p>
         <div className="text-sm text-gray-500">
-          <p>നന്മ പുതിയകാവ് മഹല്ല്  അസ്സോസിയേഷൻ, ദുബായ് കമ്മിറ്റി</p>
+          <p>&apos;നന്മ&apos; പുതിയകാവ് മഹല്ല്  അസ്സോസിയേഷൻ, ദുബായ് കമ്മിറ്റി</p>
           <p className="mt-1">Date: November 16th, 2025 | Venue: Woodlem Park School, Qusais, Dubai</p>
         </div>
       </div>

@@ -21,7 +21,7 @@ export default function Home() {
                 NANMA Puthiyakavu Mahallu Association, Dubai Committee
               </p>
               <p className="text-base text-gray-500">
-                നന്മ പുതിയകാവ് മഹല്ല്  അസ്സോസിയേഷൻ, ദുബായ് കമ്മിറ്റി
+                &apos;നന്മ&apos; പുതിയകാവ് മഹല്ല്  അസ്സോസിയേഷൻ, ദുബായ് കമ്മിറ്റി
               </p>
             </div>
             <img src="/nanma.png" alt="NANMA" className="h-30 w-auto flex-shrink-0 hidden md:block" />
@@ -82,7 +82,7 @@ export default function Home() {
                   <div>
                     <h3 className="font-semibold text-gray-900">Registration</h3>
                     <p className="text-gray-600">Open now!</p>
-                    <p className="text-sm text-red-600 font-medium">Registration ends: October 30, 2025</p>
+                    <p className="text-sm text-red-600 font-medium">Registration ends: November 14th, 2025</p>
                   </div>
                 </div>
               </div>
@@ -93,8 +93,8 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-gray-900 mb-6">What to Expect: </h3>
               <div className="space-y-4 mb-6">
                 {[
-                  { event: 'Football Competition', date: '01/11/2025' },
-                  { event: 'Badminton Competition', date: '08/11/2025' },
+                  { event: 'Badminton Competition', date: '01/11/2025' },
+                  { event: 'Football Competition', date: '08/11/2025' },
                   { event: 'Volleyball Competition', date: '15/11/2025' },
                   { event: 'Cooking Competition', date: '15/11/2025' },
                   { event: 'Tug of War', date: '16/11/2025' },
@@ -140,7 +140,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-green-600" />
-                  <span className="text-gray-700">nanma.dubai@example.com</span>
+                  <span className="text-gray-700"><a href="mailto:nanmadubai2019@gmail.com">nanmadubai2019@gmail.com</a></span>
                 </div>
               </div>
               
@@ -167,7 +167,7 @@ export default function Home() {
             <h3 className="text-2xl font-bold mb-4">NANMA Puthiyakavu Mahallu Association</h3>
             <p className="text-green-100 mb-2">Dubai Committee</p>
             <p className="text-green-200 text-sm mb-6">
-              നന്മ പുതിയകാവ് മഹല്ല്  അസ്സോസിയേഷൻ, ദുബായ് കമ്മിറ്റി
+              &apos;നന്മ&apos; പുതിയകാവ് മഹല്ല്  അസ്സോസിയേഷൻ, ദുബായ് കമ്മിറ്റി
             </p>
             
             <div className="border-t border-green-700 pt-6">
