@@ -147,7 +147,7 @@ export async function GET(request: NextRequest) {
 
     // Default: return all registrations
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const limit = parseInt(searchParams.get('limit') || '1000'); // Increased default limit to show all registrations
     const sortBy = searchParams.get('sortBy') || 'createdAt';
     const sortOrder = searchParams.get('sortOrder') === 'asc' ? 1 : -1;
     const search = searchParams.get('search') || '';
@@ -298,23 +298,6 @@ export async function PATCH(request: NextRequest) {
     //   adultsCount: registration.adultsCount,
     //   childrenCount: registration.childrenCount
     // } : 'not found');
-
-    // Verify the data was actually saved by re-fetching
-    const verifyRegistration = await RegistrationModel.findById(id).lean();
-    const verifyData = verifyRegistration as {
-      _id: unknown;
-      name: string;
-      isCheckedIn: boolean;
-      checkedInAdults: number;
-      checkedInChildren: number;
-    } | null;
-    // console.log('Verification - Data in database after save:', {
-    //   id: verifyData?._id?.toString(),
-    //   name: verifyData?.name,
-    //   isCheckedIn: verifyData?.isCheckedIn,
-    //   checkedInAdults: verifyData?.checkedInAdults,
-    //   checkedInChildren: verifyData?.checkedInChildren
-    // });
 
     if (!registration) {
       return NextResponse.json<ApiResponse<null>>({

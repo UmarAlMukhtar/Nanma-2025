@@ -50,6 +50,8 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     adultsCount: number;
     childrenCount: number;
   }>({ isOpen: false, registration: null, adultsCount: 0, childrenCount: 0 });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
 
   // Fetch data
@@ -86,6 +88,11 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortConfig, checkInFilter]);
 
   // Filter and sort registrations
   const filteredAndSortedRegistrations = useMemo(() => {
@@ -133,6 +140,12 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
     return filtered;
   }, [registrations, searchTerm, sortConfig, checkInFilter]);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredAndSortedRegistrations.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedRegistrations = filteredAndSortedRegistrations.slice(startIndex, endIndex);
 
   // Handle sorting
   const handleSort = (key: keyof Registration) => {
@@ -569,7 +582,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     </td>
                   </tr>
                 ) : (
-                  filteredAndSortedRegistrations.map((registration) => (
+                  paginatedRegistrations.map((registration) => (
                     <tr key={registration._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">{registration.name}</div>
@@ -666,6 +679,46 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                Showing {startIndex + 1} to {Math.min(endIndex, filteredAndSortedRegistrations.length)} of {filteredAndSortedRegistrations.length} registrations
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`px-3 py-1 text-sm rounded-md ${
+                        currentPage === page
+                          ? 'bg-green-600 text-white'
+                          : 'border border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       
