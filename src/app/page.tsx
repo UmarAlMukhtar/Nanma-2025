@@ -78,12 +78,12 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 p-4 bg-purple-50 rounded-lg">
-                  <Clock className="w-8 h-8 text-purple-600 flex-shrink-0" />
+                <div className="flex items-center gap-4 p-4 bg-red-50 rounded-lg">
+                  <Clock className="w-8 h-8 text-red-600 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-gray-900">Registration</h3>
-                    <p className="text-gray-600">Open now!</p>
-                    <p className="text-sm text-red-600 font-medium">Registration ends: November 14th, 2025, 7 PM</p>
+                    <p className="text-red-600 font-medium">Registration Closed</p>
+                    <p className="text-sm text-gray-500">Thank you for registering!</p>
                   </div>
                 </div>
               </div>
@@ -155,9 +155,30 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Registration Form */}
+          {/* Registration Closed Banner */}
           <div className="lg:sticky lg:top-8">
-            <RegistrationForm />
+            <div className="bg-white rounded-xl shadow-lg p-8 border-2 border-red-200">
+              <div className="text-center">
+                <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Clock className="w-10 h-10 text-red-600" />
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                  Registration Closed
+                </h2>
+                <p className="text-gray-600 text-lg leading-relaxed mb-6">
+                  Thank you for your interest in NANMA Family Fest 2025! 
+                  Registration has now closed. We look forward to seeing you at the event!
+                </p>
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <p className="text-green-800 font-medium">
+                    Event Date: November 16th, 2025
+                  </p>
+                  <p className="text-green-700 text-sm mt-1">
+                    Venue: Woodlem Park School, Qusais, Dubai
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
