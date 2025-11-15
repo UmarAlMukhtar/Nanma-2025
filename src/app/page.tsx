@@ -1,6 +1,5 @@
 import React from 'react';
 import Image from 'next/image';
-import RegistrationForm from '@/components/RegistrationForm';
 import { Calendar, MapPin, Users, Clock, Phone, Mail } from 'lucide-react';
 
 export default function Home() {

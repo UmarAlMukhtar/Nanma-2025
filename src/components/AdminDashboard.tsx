@@ -417,6 +417,12 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               <p className="text-gray-600 text-sm">Admin Dashboard</p>
             </div>
             <div className="flex items-center gap-4">
+              <a
+                href="/admin/checkin"
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm transition-colors"
+              >
+                Check In
+              </a>
               <button
                 onClick={fetchData}
                 className="p-2 text-gray-500 hover:text-green-600 transition-colors"
