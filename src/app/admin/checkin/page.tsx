@@ -1,10 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { Search, User, Users, Phone, MapPin, CheckCircle, X, Plus, Minus, ArrowLeft } from 'lucide-react';
-import { AuthProvider, useAuth } from '@/components/AuthContext';
-import AdminLogin from '@/components/AdminLogin';
-import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/components/AuthContext';
 import { Registration } from '@/lib/types';
 
 interface CheckInModalProps {
@@ -126,7 +125,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ registration, onClose, onCo
   );
 };
 
-function CheckInPage() {
+function CheckInPage({ onLogout }: { onLogout?: () => void }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<Registration[]>([]);
   const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null);
@@ -206,20 +205,29 @@ function CheckInPage() {
       <div className="max-w-md mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="flex items-center justify-between mb-6">
-            <button
-              onClick={() => window.location.href = '/admin'}
+            <Link
+              href="/admin"
               className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               <span className="text-sm font-medium">Back</span>
-            </button>
+            </Link>
             <div className="text-center flex-1">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
               <h1 className="text-xl font-bold text-gray-900">Check In</h1>
             </div>
-            <div className="w-16"></div> {/* Spacer for centering */}
+            <div className="flex items-center gap-2">
+              {onLogout && (
+                <button
+                  onClick={onLogout}
+                  className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 text-xs"
+                >
+                  Logout
+                </button>
+              )}
+            </div>
           </div>
 
           {message && (
@@ -346,30 +354,11 @@ function CheckInPage() {
 }
 
 function CheckInPageContent() {
-  const { isAuthenticated, loading } = useAuth();
+  const { logout } = useAuth();
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-green-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return <AdminLogin />;
-  }
-
-  return <CheckInPage />;
+  return <CheckInPage onLogout={logout} />;
 }
 
 export default function CheckInPageWithAuth() {
-  return (
-    <AuthProvider>
-      <CheckInPageContent />
-    </AuthProvider>
-  );
+  return <CheckInPageContent />;
 }
